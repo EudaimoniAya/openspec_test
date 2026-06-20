@@ -27,11 +27,17 @@ tasks:
     cmds:
       - npm install
 
+  setup:reports:
+    desc: 安装 Allure CLI（根目录 npm install）
+    cmds:
+      - npm install
+
   setup:all:
-    desc: 初始化 backend + frontend 依赖
+    desc: 初始化 backend + frontend + Allure CLI 依赖
     deps:
       - setup:backend
       - setup:frontend
+      - setup:reports
 
   # --- 本地开发 ---
   dev:backend:
@@ -54,15 +60,17 @@ tasks:
 
   # --- 测试 ---
   test:backend:
-    desc: 运行后端 pytest
+    desc: 运行后端 pytest（写入 Allure 结果）
     dir: backend
     cmds:
-      - uv run pytest -v
+      - mkdir -p ../reports/allure-results/backend
+      - uv run pytest -v --alluredir=../reports/allure-results/backend
 
   test:frontend:
-    desc: 运行前端 vitest
+    desc: 运行前端 vitest（写入 Allure 结果）
     dir: frontend
     cmds:
+      - mkdir -p ../reports/allure-results/frontend
       - npm run test
 
   test:all:
@@ -70,6 +78,20 @@ tasks:
     deps:
       - test:backend
       - test:frontend
+
+  test:report:
+    desc: 运行全部测试并生成 Allure HTML 报告
+    cmds:
+      - cmd: task test:all
+        ignore_error: true
+      - bash scripts/allure-report.sh
+
+  test:report:open:
+    desc: 生成 Allure 报告并提示打开路径
+    deps:
+      - test:report
+    cmds:
+      - 'echo 请在浏览器打开 reports/allure-report/index.html'
 
   # --- 代码质量 ---
   lint:backend:

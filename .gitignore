@@ -28,6 +28,10 @@ dist/
 # Devbox
 .devbox/
 
+# Allure 测试报告
+reports/allure-results/
+reports/allure-report/
+
 # OS
 .DS_Store
 Thumbs.db

@@ -143,6 +143,7 @@ go install github.com/go-task/task/v3/cmd/task@latest
 | `task dev:backend`  | 启动 FastAPI 热重载                  |
 | `task dev:frontend` | 启动 Vite 开发服务器                   |
 | `task test:all`     | pytest + vitest                 |
+| `task test:report`  | 运行测试并生成 Allure HTML 报告        |
 | `task lint:all`     | ruff/mypy + eslint/tsc          |
 | `task docker:up`    | compose 构建并后台启动（默认代理 7897）      |
 | `task docker:down`  | 停止 compose                      |
@@ -247,6 +248,38 @@ npm run typecheck
 
 CI 中**不调用**真实 DeepSeek API，全部使用 mock。
 
+## 测试报告（Allure）
+
+本地与 CI 均会收集 Allure 结果；本地可生成 HTML，CI 通过 **GitHub Actions Artifacts** 下载。
+
+### 本地生成报告
+
+**前置**：Devbox 环境已包含 JDK 17（Allure CLI 需要 Java）。首次请执行 `task setup:all`（含根目录 `allure-commandline`）。
+
+```bash
+task test:report
+# 浏览器打开 reports/allure-report/index.html
+```
+
+- `task test:backend` / `task test:frontend` 会将结果写入 `reports/allure-results/`
+- 即使部分测试失败，`task test:report` 仍会尝试生成报告（便于排查）
+
+仅重新生成 HTML（已有 results 时）：
+
+```bash
+bash scripts/allure-report.sh
+```
+
+### 从 CI 下载报告
+
+1. 打开 GitHub → **Actions** → 选择对应的 workflow run
+2. 在页面底部 **Artifacts** 区域下载 **`allure-report`**
+3. 解压后在浏览器打开 `index.html`
+
+测试 job 失败时仍会上传报告（`if: always()`），便于查看失败用例详情。
+
+原始结果 Artifact（可选）：`allure-results-backend`、`allure-results-frontend`。
+
 ## Docker
 
 推荐使用 Task（已内置代理 7897）：
@@ -273,8 +306,9 @@ docker compose up --build
 
 GitHub Actions（`.github/workflows/ci.yml`）在 push/PR 时运行：
 
-- backend: `uv sync --frozen --dev` → ruff、mypy、pytest
-- frontend: eslint、tsc、vitest
+- backend: `uv sync --frozen --dev` → ruff、mypy、pytest（含 Allure 结果）
+- frontend: eslint、tsc、vitest（含 Allure 结果）
+- **test-report**：合并 Allure 结果并上传 **`allure-report`** Artifact（见上文「测试报告」）
 - docker-build: 构建 backend 与 frontend 镜像（不 push）
 
 ## TDD 说明

@@ -1,0 +1,8 @@
+{
+  "name": "ai-chatbot-root",
+  "private": true,
+  "description": "仓库根目录工具依赖（Allure CLI）",
+  "devDependencies": {
+    "allure-commandline": "^2.34.0"
+  }
+}

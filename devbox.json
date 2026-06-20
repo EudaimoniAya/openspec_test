@@ -4,7 +4,8 @@
     "go-task@latest",
     "uv@latest",
     "nodejs_22@latest",
-    "python312@latest"
+    "python312@latest",
+    "jdk17@latest"
   ],
   "env": {
     "HTTP_PROXY": "http://127.0.0.1:7897",
