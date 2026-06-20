@@ -1,0 +1,26 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/main/.schema/devbox.schema.json",
+  "packages": [
+    "go-task@latest",
+    "uv@latest",
+    "nodejs_22@latest",
+    "python312@latest"
+  ],
+  "env": {
+    "HTTP_PROXY": "http://127.0.0.1:7897",
+    "HTTPS_PROXY": "http://127.0.0.1:7897"
+  },
+  "shell": {
+    "init_hook": [
+      "echo 'Devbox shell 已激活 — 可用 task / uv / node'",
+      "task --version || true"
+    ],
+    "scripts": {
+      "setup": "task setup:all",
+      "test": "task test:all",
+      "lint": "task lint:all",
+      "dev:backend": "task dev:backend",
+      "dev:frontend": "task dev:frontend"
+    }
+  }
+}

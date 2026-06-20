@@ -13,12 +13,16 @@ jobs:
         working-directory: backend
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install ruff
-      - run: ruff check .
-      - run: ruff format --check .
+      - run: uv sync --frozen --dev
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
 
   backend-typecheck:
     runs-on: ubuntu-latest
@@ -27,11 +31,15 @@ jobs:
         working-directory: backend
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -r requirements-dev.txt
-      - run: mypy app/
+      - run: uv sync --frozen --dev
+      - run: uv run mypy app/
 
   backend-test:
     runs-on: ubuntu-latest
@@ -40,11 +48,15 @@ jobs:
         working-directory: backend
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -r requirements-dev.txt
-      - run: pytest -v
+      - run: uv sync --frozen --dev
+      - run: uv run pytest -v
 
   frontend-lint:
     runs-on: ubuntu-latest

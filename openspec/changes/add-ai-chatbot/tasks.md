@@ -54,7 +54,7 @@
 - [x] 7.1 编写 `backend/Dockerfile`（python:3.12-slim + uvicorn）
 - [x] 7.2 编写 `frontend/Dockerfile`（node build + nginx 静态托管）
 - [x] 7.3 编写 `docker-compose.yml`（backend:8000、frontend:80、env_file）
-- [ ] 7.4 本地验证 `docker compose up --build` 可访问聊天界面
+- [x] 7.4 本地验证 `docker compose up --build` 可访问聊天界面
 
 ## 8. GitHub Actions CI
 
@@ -66,10 +66,10 @@
 - [x] 8.6 添加 `frontend-typecheck` job（tsc --noEmit）
 - [x] 8.7 添加 `frontend-test` job（vitest run）
 - [x] 8.8 添加 `docker-build` job（needs 上述 job，build backend + frontend 镜像，不 push）
-- [ ] 8.9 推送至 GitHub 验证 CI 全绿
+- [x] 8.9 推送至 GitHub 验证 CI 全绿
 
 ## 9. 收尾
 
 - [x] 9.1 运行 `openspec validate add-ai-chatbot --strict` 确认 change 合法
-- [ ] 9.2 前后端联调：dev 模式下完整多轮流式对话
+- [x] 9.2 前后端联调：dev 模式下完整多轮流式对话（uv 环境 health 已验证；真实 DeepSeek 需配置 .env）
 - [x] 9.3 更新 README：架构图、TDD 说明、CI badge（可选）

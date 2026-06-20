@@ -1,0 +1,115 @@
+version: "3"
+
+vars:
+  PROXY: '{{.PROXY | default "http://127.0.0.1:7897"}}'
+
+env:
+  HTTP_PROXY: '{{.HTTP_PROXY | default .PROXY}}'
+  HTTPS_PROXY: '{{.HTTPS_PROXY | default .PROXY}}'
+  NO_PROXY: '{{.NO_PROXY | default "localhost,127.0.0.1"}}'
+
+tasks:
+  default:
+    desc: 列出所有可用任务
+    cmds:
+      - task --list
+
+  # --- 环境初始化 ---
+  setup:backend:
+    desc: 安装后端依赖（uv sync --dev）
+    dir: backend
+    cmds:
+      - uv sync --dev
+
+  setup:frontend:
+    desc: 安装前端依赖（npm install）
+    dir: frontend
+    cmds:
+      - npm install
+
+  setup:all:
+    desc: 初始化 backend + frontend 依赖
+    deps:
+      - setup:backend
+      - setup:frontend
+
+  # --- 本地开发 ---
+  dev:backend:
+    desc: 启动 FastAPI 开发服务器（:8000）
+    dir: backend
+    cmds:
+      - uv run uvicorn app.main:app --reload --port 8000
+
+  dev:frontend:
+    desc: 启动 Vite 开发服务器（:5173）
+    dir: frontend
+    cmds:
+      - npm run dev
+
+  dev:all:
+    desc: 提示如何同时启动前后端（需两个终端）
+    cmds:
+      - 'echo 请分别在两个终端执行: task dev:backend  与  task dev:frontend'
+      - 'echo 或在 Cursor 中运行任务: Backend Dev / Frontend Dev'
+
+  # --- 测试 ---
+  test:backend:
+    desc: 运行后端 pytest
+    dir: backend
+    cmds:
+      - uv run pytest -v
+
+  test:frontend:
+    desc: 运行前端 vitest
+    dir: frontend
+    cmds:
+      - npm run test
+
+  test:all:
+    desc: 运行全部测试（backend + frontend）
+    deps:
+      - test:backend
+      - test:frontend
+
+  # --- 代码质量 ---
+  lint:backend:
+    desc: 后端 ruff + mypy
+    dir: backend
+    cmds:
+      - uv run ruff check .
+      - uv run ruff format --check .
+      - uv run mypy app/
+
+  lint:frontend:
+    desc: 前端 eslint + tsc
+    dir: frontend
+    cmds:
+      - npm run lint
+      - npm run typecheck
+
+  lint:all:
+    desc: 运行全部 lint / typecheck
+    deps:
+      - lint:backend
+      - lint:frontend
+
+  # --- Docker ---
+  docker:build:
+    desc: 构建 docker compose 镜像（默认使用代理 {{.PROXY}}）
+    cmds:
+      - docker compose build
+
+  docker:up:
+    desc: 后台启动 docker compose
+    cmds:
+      - docker compose up -d --build
+
+  docker:down:
+    desc: 停止并移除 compose 容器
+    cmds:
+      - docker compose down
+
+  docker:logs:
+    desc: 跟踪 compose 日志
+    cmds:
+      - docker compose logs -f

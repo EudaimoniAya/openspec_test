@@ -8,6 +8,7 @@ __pycache__/
 *.egg-info/
 .venv/
 venv/
+backend/.venv/
 .mypy_cache/
 .ruff_cache/
 .pytest_cache/
@@ -23,6 +24,9 @@ dist/
 .idea/
 .vscode/
 *.swp
+
+# Devbox
+.devbox/
 
 # OS
 .DS_Store
