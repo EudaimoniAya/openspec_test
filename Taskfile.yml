@@ -87,11 +87,11 @@ tasks:
       - bash scripts/allure-report.sh
 
   test:report:open:
-    desc: 生成 Allure 报告并提示打开路径
+    desc: 生成 Allure 报告并用本地 HTTP 服务打开（避免 file:// Failed to fetch）
     deps:
       - test:report
     cmds:
-      - 'echo 请在浏览器打开 reports/allure-report/index.html'
+      - ./node_modules/.bin/allure open reports/allure-report -p 8765
 
   # --- 代码质量 ---
   lint:backend:

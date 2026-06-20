@@ -258,7 +258,15 @@ CI 中**不调用**真实 DeepSeek API，全部使用 mock。
 
 ```bash
 task test:report
-# 浏览器打开 reports/allure-report/index.html
+task test:report:open   # 推荐：本地 HTTP 服务打开，避免 Failed to fetch
+```
+
+**不要**在资源管理器中双击 `index.html` 用 `file://` 打开。Allure 报告是 SPA，需要通过 HTTP 加载 `widgets/*.json`；`file://` 下浏览器会拦截 fetch，页面会显示 **500 / Failed to fetch**。
+
+从 CI 下载 `allure-report` 解压后，同样请在本机执行：
+
+```bash
+./node_modules/.bin/allure open path/to/allure-report
 ```
 
 - `task test:backend` / `task test:frontend` 会将结果写入 `reports/allure-results/`
@@ -274,7 +282,7 @@ bash scripts/allure-report.sh
 
 1. 打开 GitHub → **Actions** → 选择对应的 workflow run
 2. 在页面底部 **Artifacts** 区域下载 **`allure-report`**
-3. 解压后在浏览器打开 `index.html`
+3. 解压后在本机用 `allure open <解压目录>` 打开（**不要**直接双击 `index.html`，否则会 Failed to fetch）
 
 测试 job 失败时仍会上传报告（`if: always()`），便于查看失败用例详情。
 
