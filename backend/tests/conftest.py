@@ -1,10 +1,15 @@
 """pytest 公共 fixtures。"""
 
 from collections.abc import AsyncIterator
+from typing import Any
 
 import pytest
 from httpx import ASGITransport, AsyncClient
-from langchain_core.messages import AIMessage
+from langchain_core.callbacks import CallbackManagerForLLMRun
+from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_core.messages import AIMessage, BaseMessage
+from langchain_core.outputs import ChatGeneration, ChatResult
+from pydantic import Field
 
 from app.main import app
 from app.memory.session_store import SessionStore
@@ -12,16 +17,33 @@ from app.routers import chat
 from app.services.chat_service import ChatService
 
 
-class FakeStreamingLLM:
+class FakeStreamingLLM(BaseChatModel):
     """测试用流式 LLM，按固定 token 列表输出。"""
 
-    def __init__(self, tokens: list[str] | None = None) -> None:
-        self._tokens = tokens or ["你", "好"]
-        self.last_messages: list = []
+    tokens: list[str] = Field(default_factory=lambda: ["你", "好"])
+    last_messages: list[BaseMessage] = Field(default_factory=list, exclude=True)
 
-    async def astream(self, messages: list) -> AsyncIterator[AIMessage]:
-        self.last_messages = messages
-        for token in self._tokens:
+    @property
+    def _llm_type(self) -> str:
+        return "fake-streaming"
+
+    def _generate(
+        self,
+        messages: list[BaseMessage],
+        stop: list[str] | None = None,
+        run_manager: CallbackManagerForLLMRun | None = None,
+        **kwargs: Any,
+    ) -> ChatResult:
+        content = "".join(self.tokens)
+        return ChatResult(generations=[ChatGeneration(message=AIMessage(content=content))])
+
+    async def astream(
+        self,
+        messages: list[BaseMessage],
+        **kwargs: Any,
+    ) -> AsyncIterator[AIMessage]:
+        self.last_messages = list(messages)
+        for token in self.tokens:
             yield AIMessage(content=token)
 
 

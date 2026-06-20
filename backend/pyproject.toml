@@ -22,6 +22,10 @@ dev = [
     "allure-pytest>=2.13.0",
 ]
 
+[tool.uv]
+# 虚拟环境固定在 backend/.venv（与本 pyproject.toml 同目录）
+# 请在 backend/ 目录或通过 task setup:backend 执行 uv sync，勿在仓库根目录创建 .venv
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
@@ -32,6 +36,14 @@ packages = ["app"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+
+[tool.pyright]
+include = ["app", "tests"]
+venvPath = "."
+venv = ".venv"
+pythonVersion = "3.12"
+pythonPlatform = "Linux"
+typeCheckingMode = "basic"
 
 [tool.ruff]
 target-version = "py312"
