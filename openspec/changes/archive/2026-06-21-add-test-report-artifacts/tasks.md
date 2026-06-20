@@ -24,7 +24,7 @@
 - [x] 4.2 更新 `frontend-test`：导出结果并 `upload-artifact`（`if: always()`）
 - [x] 4.3 新增 `test-report` job：`download-artifact` → `allure generate` → 上传 `allure-report` Artifact
 - [x] 4.4 配置 Java（Allure CLI 需要）与 Node（npx allure-commandline）
-- [ ] 4.5 推送分支验证 Actions Artifacts 可下载（需 push 后在 Actions 页面确认）
+- [x] 4.5 推送分支验证 Actions Artifacts 可下载（CI 重跑已通过）
 
 ## 5. 文档
 
